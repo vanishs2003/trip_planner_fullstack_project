@@ -1,9 +1,11 @@
 import { Input } from "postcss";
 import React, { useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { SelectBudgetOptions } from "@/constants/options";
+import { AI_PROMPT, SelectBudgetOptions } from "@/constants/options";
 import { SelectTravelesList } from "@/constants/options";
 import { Button } from "@/Components/ui/button";
+import { toast } from "sonner";
+import { chatSession } from "@/service/AIModel";
 function CreateTrip() {
   const [place, setPlace] = useState();
 
@@ -20,6 +22,27 @@ function CreateTrip() {
   useEffect(()=>{
     console.log(formData);
   },[formData])
+
+  const OnGenerateTrip=async()=>{
+    if(formData?.noOfDays>5&&!formData?.location||!formData?.budget||!formData?.traveler)
+    {
+      toast ("Please fill all details.")
+      return;
+    }
+
+    const FINAL_PROMPT=AI_PROMPT
+    .replace('{location}', formData?.location?.label)
+    .replace('{totalDays}', formData?.noOfDays)
+    .replace('{traveler}', formData?.traveler)
+    .replace('{budget}',formData?.budget)
+    .replace('{totalDays}',formData?.noOfDays)
+
+    console.log(FINAL_PROMPT);
+
+    const result=await chatSession.sendMessage(FINAL_PROMPT);
+
+    console.log(result?.response.text());
+  }
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10">
       <h2 className="font-bold text-3xl">Tell us your preferences🏕️🌴</h2>
@@ -92,7 +115,7 @@ function CreateTrip() {
       </div>
       </div>
       <div className='my-10 justify-end flex'>
-      <Button> Generate Trip</Button>
+      <Button onClick={OnGenerateTrip}> Generate Trip</Button>
       </div>
     </div>
 

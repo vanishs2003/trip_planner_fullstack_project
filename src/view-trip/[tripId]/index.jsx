@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import InfoSection from '../components/infoSection';
 import Hotels from '../components/Hotels';
+import Footer from '../components/Footer';
 
 
 
@@ -43,6 +44,7 @@ function Viewtrip() {
 
 
          {/*Footer */}
+             <Footer trip={trip}/>
 
 
 

@@ -1,10 +1,31 @@
 import { Button } from '@/Components/ui/button'
-import React from 'react'
+import React, { useState } from 'react'
 import { IoSendSharp } from "react-icons/io5";
+
+const PHOTO_REF_URL='https://places.googleapis.com/v1/{NAME}/media?maxHeightPx=600&maxWidthPx=600&key='+import.meta.env.VITE_GOOGLE_PLACE_API_KEY
 function InfoSection({trip}) {
+
+  const [photoUrl,setPhotoUrl]=useState();
+  useEffect(()=>{
+    trip&&GetPlacePhoto();
+  },[trip])
+
+  const GetPlacePhoto=async()=>{
+    const data={
+      textQuery:trip?.userSelection?.location?.label
+    }
+    const result=await GetPlaceDetials().then(resp=>{
+      console.log(resp.data.places[0].photos[3].name)
+
+      const photoUrl=PHOTO_REF_URL.replace('{NAME}',resp.data.places[0].photos[3].name,);
+      setPhotoUrl(photoUrl);
+
+      }
+    })
+  }
   return (
     <div>
-        <img src='/placeholder.jpg' className='h-[300px] w-full object-cover rounded-xl'/> 
+        <img src={photoUrl?photoUrl:"/placeholder.jpg"} className='h-[300px] w-full object-cover rounded-xl'/> 
         <div className='flex justify-between items-center'>
         <div className='my-5 flex flex-col gap-2'>
              <h2 className='font-bold text-2xl'>{trip?.userSelection?.location?.label}</h2>

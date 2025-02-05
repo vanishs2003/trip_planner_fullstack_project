@@ -1,56 +1,57 @@
-import { db } from '@/service/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
-import React, { useEffect } from 'react'
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import InfoSection from '../components/infoSection';
-import Hotels from '../components/Hotels';
-import Footer from '../components/Footer';
+import { db } from "@/service/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "sonner";
+import InfoSection from "../components/InfoSection";
+import Hotels from "../components/Hotels";
+import Footer from "../components/Footer";
 
+function ViewTrip() {
+  const { tripId } = useParams();
+  const [trip, setTrip] = useState({}); // Changed from [] to {}
 
-
-function Viewtrip() {
-
-    const {tripId}=useParams();
-    const [trip,setTrip]=useState([]);
-    useEffect(()=>{
-        tripId&&GetTripData();
-    },[tripId])
-    /**
-     * used to get Trip Information from Firebase
-     */
-    const GetTripData=async()=>{
-        const docRef=doc(db,'AITrips',tripId);
-        const docSnap=await getDoc(docRef);
-
-        if(docSnap.exists()){
-            console.log("Document:",docSnap.data());
-            setTrip(docSnap.data());
-        }
-        else{
-            console.log("No such Document");
-            toast('no trip Found!')
-        }
+  useEffect(() => {
+    if (tripId) {
+      GetTripData();
     }
+  }, [tripId]); // tripId as dependency
+
+  /**
+   * Function to fetch trip data from Firebase
+   */
+  const GetTripData = async () => {
+    try {
+      const docRef = doc(db, "AITrips", tripId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        console.log("Document Data:", docSnap.data());
+        setTrip(docSnap.data());
+      } else {
+        console.log("No such document!");
+        toast.error("No trip found!"); // Updated toast message
+      }
+    } catch (error) {
+      console.error("Error fetching trip data:", error);
+      toast.error("Failed to fetch trip data!");
+    }
+  };
+
   return (
-    <div className='p-10 md:px-20 lg:px-44 xl:px-56'>
-        {/* Infromation Section */}
-        <InfoSection trip={trip} />
-         {/*Recommended hotels */}
-        <Hotels trip={trip}/>
+    <div className="p-10 md:px-20 lg:px-44 xl:px-56">
+      {/* Information Section */}
+      <InfoSection trip={trip} />
 
-         {/* Daily plan */}
+      {/* Recommended Hotels */}
+      <Hotels trip={trip} />
 
+      {/* Daily Plan - Add component here if needed */}
 
-         {/*Footer */}
-             <Footer trip={trip}/>
-
-
-
-
+      {/* Footer */}
+      <Footer trip={trip} />
     </div>
-  )
+  );
 }
 
-export default Viewtrip
+export default ViewTrip;

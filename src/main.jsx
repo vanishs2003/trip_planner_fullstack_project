@@ -8,6 +8,7 @@ import Header from './Components/custom/Header'
 import { Toaster } from 'sonner'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import Viewtrip from "./view-trip/[tripId]/index.jsx"; // Import the main component
+import MyTrips from './my-trips'
 
 const router = createBrowserRouter([
   {
@@ -21,7 +22,11 @@ const router = createBrowserRouter([
   {
     path: '/view-trip/:tripId',
     element: <Viewtrip />
-  }
+  },
+  {
+    path:'/my-trips',
+    element:<MyTrips/>
+  },
 ])
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

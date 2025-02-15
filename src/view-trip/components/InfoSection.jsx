@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/Components/ui/button';
 import { IoSendSharp } from "react-icons/io5";
 
-export const PHOTO_REF_URL = `https://places.googleapis.com/v1/{NAME}/media?maxHeightPx=600&maxWidthPx=600&key=${import.meta.env.VITE_GOOGLE_PLACE_API_KEY}`;
+// Ensure API key is correctly loaded from environment variables
+export const PHOTO_REF_URL = (photoName) => 
+    `https://places.googleapis.com/v1/${photoName}/media?maxHeightPx=600&maxWidthPx=600&key=${import.meta.env.VITE_GOOGLE_PLACE_API_KEY}`;
 
 function InfoSection({ trip }) {
     const [photoUrl, setPhotoUrl] = useState(null);
@@ -17,27 +19,27 @@ function InfoSection({ trip }) {
         try {
             const data = { textQuery: trip?.userSelection?.location?.label };
 
-            // Ensure `GetPlaceDetails` function is defined or imported
-            const resp = await GetPlaceDetials(); 
+            // Ensure `GetPlaceDetails` is correctly defined and returns expected data
+            const resp = await GetPlaceDetails(data); 
 
-            if (resp?.data?.places?.[0]?.photos?.length > 0) {
-                const photoName = resp.data.places[0].photos[0].name; // Safely access first photo
-                const newPhotoUrl = PHOTO_REF_URL.replace('{NAME}', photoName);
+            if (resp?.data?.places?.length > 0 && resp?.data?.places[0]?.photos?.length > 0) {
+                const photoName = resp.data.places[0].photos[0].name; 
+                const newPhotoUrl = PHOTO_REF_URL(photoName); 
                 setPhotoUrl(newPhotoUrl);
             } else {
                 console.warn("No photos available for this place.");
-                setPhotoUrl(null);
+                setPhotoUrl("/placeholder.jpg"); // Ensure this image exists in your project
             }
         } catch (error) {
             console.error("Error fetching place photo:", error);
-            setPhotoUrl(null);
+            setPhotoUrl("/placeholder.jpg");
         }
     };
 
     return (
         <div>
             <img 
-                src={photoUrl || "/placeholder.jpg"} 
+                src={photoUrl} 
                 className='h-[300px] w-full object-cover rounded-xl' 
                 alt="Location"
             />
